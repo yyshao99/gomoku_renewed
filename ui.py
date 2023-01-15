@@ -17,6 +17,7 @@ class UI:
         self.spacing = 46.42
         self.screen = None
         self.playing = False
+        self.gl = gl.GameLogic()
 
     def gamestart(self):
         pygame.init()
@@ -56,35 +57,14 @@ class UI:
                     self.mouse_click()
 
     def mouse_click(self):
-        pos = pygame.mouse.get_pos()
-        if pos[1] <= self.width:
+        screen_pos = pygame.mouse.get_pos()
+        if screen_pos[1] <= self.width:
             if playing:
-                x_axis = int((pos[0])//46.42)
-                y_axis = int((pos[1])//46.42)
-                log.append((x_axis,y_axis))
-                if pan[x_axis][y_axis] == 0:
-                    print("black"+"(%s,%s)"%(x_axis,y_axis))
-                    pan[x_axis][y_axis] = 1
-                    toput = (x_axis*46.42,y_axis*46.42)
-                    self.screen.blit(im_black,toput)
-                    
-                    if sound_active == 1:
-                        pygame.mixer.Channel(2).play(sound)
-
-                    color = -color
-                    if win(pan):
-                        print("black wins")
-                        playing = 0
-                        color = 1
-                        screen.blit(im_finishblack,(300,0))
-                        pygame.display.flip()
-                        log.append(('win',1))
-                        f = open('./logs/logs:'+localtime+'.txt','w')
-                        f.write(str(log))
-                        f.close()
-                        print('output logs:'+'logs:'+localtime+'.txt')
-                        
-                    pygame.display.flip()
+                x_axis = int((screen_pos[0])//46.42)
+                y_axis = int((screen_pos[1])//46.42)
+                pos = (x_axis,y_axis)
+                gl.play_chess(pos)
+                
         if pos[1] > 700:
             if pos[0] <= 350:
                 print("play again")
@@ -111,3 +91,9 @@ class UI:
                     pygame.display.flip()
 
     def play_chess(self,color,pos):
+        screen_pos = (pos[0] * self.spacing, pos[1] * self.spacing)
+        if color == 1:
+            self.screen.blit(self.im_black,screen_pos)
+        if color == -1:
+            self.screen.blit(self.im_white,screen_pos)
+        pygame.display.flip()
